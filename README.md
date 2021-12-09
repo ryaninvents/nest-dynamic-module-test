@@ -18,3 +18,5 @@ To produce a reductive example, I've created two modules:
 - `AllAnimalsModule`, which tracks multiple species and defers to each `AnimalModule` for details.
 
 `AllAnimalsModule` is responsible for instantiating any number of copies of `AnimalModule`, and for tracking the relationships between them. The only concession to my original plan was that it was necessary to add a `reference` argument to `AnimalModule.register` so that I could pass in a symbol. This symbol allows other modules to "reach in" and grab the local `AnimalService` via `ModuleRef`.
+
+Still need to figure out how to grab values from `ConfigService` while setting things up -- might have a viable route forward [on the basis of this Stack Overflow post](https://stackoverflow.com/questions/63356440/how-to-import-a-registerasync-in-a-dynamic-nestjs-module).
