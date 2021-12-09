@@ -1,17 +1,17 @@
 import { Controller, Get } from '@nestjs/common';
-import { AnimalService } from './animal/animal/animal.service';
+import { AllAnimalsService } from './all-animals/all-animals/all-animals.service';
 import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly animalService: AnimalService,
+    private readonly allAnimalsService: AllAnimalsService,
   ) {}
 
   @Get()
-  getHello(): string {
-    const animals = this.animalService.getMembers();
+  async getHello(): Promise<string> {
+    const animals = await this.allAnimalsService.getMembers();
     return `
     <ul>
       ${animals

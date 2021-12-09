@@ -1,15 +1,22 @@
-import { DynamicModule, Module } from '@nestjs/common';
+import { ClassProvider, DynamicModule, Module, Type } from '@nestjs/common';
 import {
   AnimalService,
   AnimalServiceOptions,
   ANIMAL_SERVICE_OPTIONS,
 } from './animal/animal.service';
+import {
+  AnimalServiceRefService,
+  ANIMAL_SERVICE_REF_SERVICE_TOKEN,
+} from './animal-service-ref/animal-service-ref.service';
 
 @Module({
-  providers: [AnimalService],
+  providers: [AnimalService, AnimalServiceRefService],
 })
 export class AnimalModule {
-  static register({ members, legs }: AnimalServiceOptions): DynamicModule {
+  static register(
+    { members, legs }: AnimalServiceOptions,
+    reference: ClassProvider['provide'] = Symbol(),
+  ): DynamicModule {
     return {
       module: AnimalModule,
       providers: [
@@ -18,8 +25,13 @@ export class AnimalModule {
           useValue: { members, legs },
         },
         AnimalService,
+        {
+          provide: ANIMAL_SERVICE_REF_SERVICE_TOKEN,
+          useValue: reference,
+        },
+        { provide: reference, useClass: AnimalServiceRefService },
       ],
-      exports: [AnimalService],
+      exports: [AnimalService, AnimalServiceRefService],
     };
   }
 }
