@@ -1,7 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { AnimalServiceRefService } from '../../animal/animal-service-ref/animal-service-ref.service';
-import { AnimalServiceOptions } from '../../animal/animal/animal.service';
+import {
+  AnimalService,
+  AnimalServiceOptions,
+} from '../../animal/animal/animal.service';
 
 export const ALL_ANIMALS_OPTIONS = Symbol('ALL_ANIMALS_OPTIONS');
 export type AllAnimalsOptionType = Array<{
@@ -27,21 +29,16 @@ export class AllAnimalsService {
     return this.moduleRef.get(opt.reference);
   }
 
-  async allServices() {
-    return Promise.all(
-      this.options.map(({ reference }) =>
-        this.moduleRef
-          .get<AnimalServiceRefService>(reference, { strict: false })
-          .getAnimalService(),
-      ),
+  allServices() {
+    return this.options.map(({ reference }) =>
+      this.moduleRef.get<AnimalService>(reference, { strict: false }),
     );
   }
 
-  async getMembers() {
-    const services = await this.allServices();
-    return (await Promise.all(services.map((s) => s.getMembers()))).reduce(
-      (a, b) => a.concat(b),
-      [],
-    );
+  getMembers() {
+    const services = this.allServices();
+    return services
+      .map((s) => s.getMembers())
+      .reduce((a, b) => a.concat(b), []);
   }
 }

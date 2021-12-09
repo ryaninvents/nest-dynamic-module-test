@@ -4,18 +4,14 @@ import {
   AnimalServiceOptions,
   ANIMAL_SERVICE_OPTIONS,
 } from './animal/animal.service';
-import {
-  AnimalServiceRefService,
-  ANIMAL_SERVICE_REF_SERVICE_TOKEN,
-} from './animal-service-ref/animal-service-ref.service';
 
 @Module({
-  providers: [AnimalService, AnimalServiceRefService],
+  providers: [AnimalService],
 })
 export class AnimalModule {
   static register(
     { members, legs }: AnimalServiceOptions,
-    reference: ClassProvider['provide'] = Symbol(),
+    reference?: ClassProvider['provide'],
   ): DynamicModule {
     return {
       module: AnimalModule,
@@ -25,13 +21,11 @@ export class AnimalModule {
           useValue: { members, legs },
         },
         AnimalService,
-        {
-          provide: ANIMAL_SERVICE_REF_SERVICE_TOKEN,
-          useValue: reference,
-        },
-        { provide: reference, useClass: AnimalServiceRefService },
+        ...(reference
+          ? [{ provide: reference, useExisting: AnimalService }]
+          : []),
       ],
-      exports: [AnimalService, AnimalServiceRefService],
+      exports: [AnimalService],
     };
   }
 }
